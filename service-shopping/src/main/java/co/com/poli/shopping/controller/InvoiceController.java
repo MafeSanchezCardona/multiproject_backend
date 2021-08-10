@@ -1,4 +1,4 @@
-package co.com.poli.customer.controller;
+package co.com.poli.shopping.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,86 +20,99 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import co.com.poli.customer.entities.Customer;
-import co.com.poli.customer.services.CustomerService;
-import co.com.poli.customer.utils.ErrorMessage;
-import co.com.poli.customer.utils.Response;
-import co.com.poli.customer.utils.ResponseBuilder;
+import co.com.poli.shopping.entities.Invoice;
+import co.com.poli.shopping.services.InvoiceService;
+import co.com.poli.shopping.utils.ErrorMessage;
+import co.com.poli.shopping.utils.Response;
+import co.com.poli.shopping.utils.ResponseBuilder;
 import lombok.RequiredArgsConstructor;
 
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/customer")
-public class CustomerController
+@RequestMapping("/shopping")
+public class InvoiceController
 {
-	private final CustomerService customerService;
+	private final InvoiceService invoiceService;
 
 	private final ResponseBuilder builder;
 
 	@PostMapping
-	public Response save(@Valid @RequestBody Customer customer, BindingResult result)
+	public Response save(@Valid @RequestBody Invoice invoice, BindingResult result)
 	{
 		if (result.hasErrors())
 		{
 			return builder.failed(this.formatMessage(result));
 		}
 
-		customerService.save(customer);
+		invoiceService.save(invoice);
 
-		return builder.success(customer);
+		return builder.success(invoice);
 	}
 
-	@DeleteMapping("/{id}")
-	public Response delete(@PathVariable("id") Long id)
+	@DeleteMapping("/{number}")
+	public Response delete(@PathVariable("number") String number)
 	{
-		Customer customer = customerService.findById(id);
+		Invoice invoice = invoiceService.findByNumber(number);
 
-		if (Objects.isNull(customer))
+		if (Objects.isNull(invoice))
 		{
 			return builder.notFound();
 		}
 
-		customerService.delete(customer);
-		return builder.success(customer);
+		invoiceService.delete(invoice);
+		return builder.success(invoice);
 	}
 
 	@GetMapping
 	public Response findAll()
 	{
-		List<Customer> customers = customerService.findAll();
+		List<Invoice> invoices = invoiceService.findAll();
 
-		if (customers.isEmpty())
+		if (invoices.isEmpty())
 		{
 			return builder.noContent();
 		}
-		return builder.success(customers);
+		return builder.success(invoices);
 	}
 
 	@GetMapping("/{id}")
 	public Response findById(@PathVariable("id") Long id)
 	{
-		Customer customer = customerService.findById(id);
+		Invoice invoice = invoiceService.findById(id);
 
-		if (Objects.isNull(customer))
+		if (Objects.isNull(invoice))
 		{
 			return builder.noContent();
 		}
 
-		return builder.success(customer);
+		return builder.success(invoice);
 	}
 
-	@GetMapping("/numberId/{id}")
-	public Response findByNumberId(@PathVariable("id") String numberId)
+	@GetMapping("/customerId/{customerId}")
+	public Response findByCustomerId(@PathVariable("customerId") Long customerId)
 	{
-		Customer customer = customerService.findByNumberId(numberId);
+		List<Invoice> invoiceList = invoiceService.findByCustomerId(customerId);
 
-		if (Objects.isNull(customer))
+		if (invoiceList.isEmpty())
 		{
 			return builder.noContent();
 		}
 
-		return builder.success(customer);
+		return builder.success(invoiceList);
+	}
+
+	@GetMapping("/number/{number}")
+	public Response findByNumber(@PathVariable("number") String number)
+	{
+		Invoice invoice = invoiceService.findByNumber(number);
+
+		if (Objects.isNull(invoice))
+		{
+			return builder.noContent();
+		}
+
+		return builder.success(invoice);
 	}
 
 	private String formatMessage(BindingResult result)

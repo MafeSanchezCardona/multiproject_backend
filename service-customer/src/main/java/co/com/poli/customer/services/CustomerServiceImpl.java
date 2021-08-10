@@ -46,8 +46,8 @@ public class CustomerServiceImpl implements CustomerService
 
 	@Override
 	@Transactional(readOnly = true)
-	public Customer findByNumberId(final String numberID)
+	public Customer findByNumberId(final String numberId)
 	{
-		return customerRepository.findByNumberID(numberID);
+		return customerRepository.findByNumberID(numberId);
 	}
 }
