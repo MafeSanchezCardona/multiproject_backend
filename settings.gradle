@@ -1,0 +1,5 @@
+rootProject.name = 'multiproject_backend'
+
+include 'service-product'
+include 'service-customer'
+include 'service-shopping'
